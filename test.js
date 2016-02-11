@@ -132,12 +132,6 @@ describe('InfluxDB', function () {
     it('should create a new database without error', function (done) {
       client.createDatabase(info.db.name, done)
     })
-    it('should throw an error if db already exists', function (done) {
-      client.createDatabase(info.db.name, function (err) {
-        assert(err instanceof Error)
-        done()
-      })
-    })
   })
 
   describe('#getDatabaseNames', function () {

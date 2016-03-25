@@ -3,11 +3,11 @@
 An [InfluxDB](http://influxdb.org/) Node.js Client
 
 [![npm](http://img.shields.io/npm/v/influx.svg?style=flat-square)](https://www.npmjs.org/package/influx)
-[![build](http://img.shields.io/travis/node-influx/node-influx/master.svg?style=flat-square)](https://travis-ci.org/node-influx/node-influx)
-[![coverage](http://img.shields.io/coveralls/node-influx/node-influx/master.svg?style=flat-square)](https://coveralls.io/r/node-influx/node-influx?branch=master)
-[![code climate](http://img.shields.io/codeclimate/github/node-influx/node-influx.svg?style=flat-square)](https://codeclimate.com/github/node-influx/node-influx)
-[![Dependency Status](https://img.shields.io/david/node-influx/node-influx.svg?style=flat-square)](https://david-dm.org/node-influx/node-influx)
-[![Github Releases](https://img.shields.io/npm/dm/influx.svg?style=flat-square)](https://github.com/node-influx/node-influx)
+[![build](http://img.shields.io/travis/thinkdevcode/node-influx/master.svg?style=flat-square)](https://travis-ci.org/thinkdevcode/node-influx)
+[![coverage](http://img.shields.io/coveralls/thinkdevcode/node-influx/master.svg?style=flat-square)](https://coveralls.io/r/thinkdevcode/node-influx?branch=master)
+[![code climate](http://img.shields.io/codeclimate/github/thinkdevcode/node-influx.svg?style=flat-square)](https://codeclimate.com/github/thinkdevcode/node-influx)
+[![Dependency Status](https://img.shields.io/david/thinkdevcode/node-influx.svg?style=flat-square)](https://david-dm.org/thinkdevcode/node-influx)
+[![Github Releases](https://img.shields.io/npm/dm/influx.svg?style=flat-square)](https://github.com/thinkdevcode/node-influx)
 
 [![Bountysource](https://img.shields.io/bountysource/team/node-influx/activity.svg?style=flat-square)](https://www.bountysource.com/teams/node-influx) - Reward the contributors for their efforts on upcoming tasks.
 
@@ -105,7 +105,7 @@ client.setFailoverTimeout( value )
 Returns an array of available hosts.
 
 ```js
-getHostsAvailable( ) 
+getHostsAvailable( )
 ```
 
 ##### getHostsDisabled
@@ -127,7 +127,7 @@ client.createDatabase(databaseName, function(err, result) {} )
 Returns array of database names - requires cluster admin privileges
 
 ```js
-client.getDatabaseNames( function(err,arrayDatabaseNames){ } ) 
+client.getDatabaseNames( function(err,arrayDatabaseNames){ } )
 ```
 
 ##### dropDatabase
@@ -335,7 +335,7 @@ You can also pass multiple queries at once. The callback returns an array of ser
 ```js
 client.query('SELECT * FROM myseries; SELECT AVG(VALUE) as avgvalue from myseries', function (err, results) {});
 
-// -> results =[ 
+// -> results =[
 //   [ { value : 1, tagname : 'tagvalue'}, {value : 3, othertag : 'value}],
 //   [ {avgvalue : 2.345}]
 // ]
@@ -421,7 +421,7 @@ Then to run the test harness use `npm test`.
 
 ## Contributing
 
-If you want to add features, fix bugs or improve node-influx please open a pull-request. 
+If you want to add features, fix bugs or improve node-influx please open a pull-request.
 Please note, we are following [Javascript Standard Style](https://github.com/feross/standard). Before opening a PR
 your code should pass Standard.
 

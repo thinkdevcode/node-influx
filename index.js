@@ -266,11 +266,11 @@ InfluxDB.prototype._createKeyTagString = function (object) {
   }).join(',')
 }
 
-InfluxDB.prototype._prepareValues = function (series) {
+InfluxDB.prototype._prepareValues = function (measurements) {
   var output = []
-  _.forEach(series, function (values, seriesName) {
+  _.forEach(measurements, function (values, measurementName) {
     _.each(values, function (points) {
-      var line = seriesName.replace(/ /g, '\\ ').replace(/,/g, '\\,')
+      var line = measurementName.replace(/ /g, '\\ ').replace(/,/g, '\\,')
       if (points[1] && _.isObject(points[1]) && _.keys(points[1]).length > 0) {
         line += ',' + this._createKeyTagString(points[1])
       }

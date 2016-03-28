@@ -302,7 +302,7 @@ InfluxDB.prototype._prepareValues = function (measurements) {
   return output.join('\n')
 }
 
-InfluxDB.prototype.writeSeries = function (series, options, callback) {
+InfluxDB.prototype.writeMeasurements = function (measurements, options, callback) {
   if (typeof options === 'function') {
     callback = options
     options = {}
@@ -319,28 +319,28 @@ InfluxDB.prototype.writeSeries = function (series, options, callback) {
   this.request.post({
     url: this.url('write', options),
     pool: typeof options.pool !== 'undefined' ? options.pool : {},
-    body: this._prepareValues(series)
+    body: this._prepareValues(measurements)
   }, this._parseCallback(callback))
 }
 
-InfluxDB.prototype.writePoint = function (seriesName, values, tags, options, callback) {
+InfluxDB.prototype.writePoint = function (measurementName, values, tags, options, callback) {
   if (typeof options === 'function') {
     callback = options
     options = {}
   }
   var data = {}
-  data[seriesName] = [[values, tags]]
-  this.writeSeries(data, options, callback)
+  data[measurementName] = [[values, tags]]
+  this.writeMeasurements(data, options, callback)
 }
 
-InfluxDB.prototype.writePoints = function (seriesName, points, options, callback) {
+InfluxDB.prototype.writePoints = function (measurementName, points, options, callback) {
   if (typeof options === 'function') {
     callback = options
     options = {}
   }
   var data = {}
-  data[seriesName] = points
-  this.writeSeries(data, options, callback)
+  data[measurementName] = points
+  this.writeMeasurements(data, options, callback)
 }
 
 InfluxDB.prototype.query = function (databaseName, query, callback) {

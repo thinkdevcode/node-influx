@@ -215,9 +215,9 @@ InfluxDB.prototype.createUser = function (username, password, isAdmin, callback)
     callback = isAdmin
     isAdmin = false
   }
-  var query = 'create user "' + username + '" with password \'' + password + "'"
+  var query = `CREATE USER ${username} with password '${password}'`
   if (isAdmin) {
-    query += ' with all privileges'
+    query += ' WITH ALL PRIVILEGES'
   }
   this.queryDB(query, callback)
 }

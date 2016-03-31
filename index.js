@@ -128,17 +128,34 @@ InfluxDB.prototype.queryDB = function (query, options, callback) {
   }, this._parseCallback(callback))
 }
 
-// creates a new database
-InfluxDB.prototype.createDatabase = function (databaseName, callback) {
-  this.queryDB('create database "' + databaseName + '"', callback)
+InfluxDB.prototype._parseAttributes = function (options) {
+  var attributes = ''
+  for (var attribute in options) {
+    if (!options.hasOwnProperty(attribute))
+      continue
+
+    attributes += `${attribute} ${options[attribute]} `
+  }
+  return attributes
+}
+
+InfluxDB.prototype.createDatabase = function (databaseName, options, callback) {
+  var query = `CREATE DATABASE ${databaseName}`
+  if (typeof options === 'function') {
+    callback = options
+  }
+  else {
+    query += ` WITH ${this._parseAttributes(options)}`
+  }
+  this.queryDB(query, callback)
 }
 
 InfluxDB.prototype.dropDatabase = function (databaseName, callback) {
-  this.queryDB('drop database "' + databaseName + '"', callback)
+  this.queryDB(`DROP DATABASE ${databaseName}`, callback)
 }
 
 InfluxDB.prototype.getDatabaseNames = function (callback) {
-  this.queryDB('show databases', function (err, results) {
+  this.queryDB('SHOW DATABASES', function (err, results) {
     if (err) {
       return callback(err, results)
     }
@@ -147,7 +164,7 @@ InfluxDB.prototype.getDatabaseNames = function (callback) {
 }
 
 InfluxDB.prototype.getMeasurements = function (callback) {
-  this.queryDB('show measurements', callback)
+  this.queryDB('SHOW MEASUREMENTS', callback)
 }
 
 InfluxDB.prototype.getSeriesNames = function (measurementName, callback) {

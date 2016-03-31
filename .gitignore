@@ -4,3 +4,4 @@ coverage
 .idea
 .coveralls.yml
 npm-debug.log
+a.js

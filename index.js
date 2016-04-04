@@ -128,13 +128,14 @@ InfluxDB.prototype.queryDB = function (query, options, callback) {
   }, this._parseCallback(callback))
 }
 
-InfluxDB.prototype._parseAttributes = function (options) {
+InfluxDB.prototype._parseAttributes = function (options, delimiter) {
   var attributes = ''
+  delimiter = delimiter || ' '
   for (var attribute in options) {
     if (!options.hasOwnProperty(attribute))
       continue
 
-    attributes += `${attribute} ${options[attribute]} `
+    attributes += `${attribute}${delimiter}${options[attribute]} `
   }
   return attributes
 }
@@ -167,7 +168,27 @@ InfluxDB.prototype.getMeasurements = function (callback) {
   this.queryDB('SHOW MEASUREMENTS', callback)
 }
 
-InfluxDB.prototype.getSeriesNames = function (measurementName, callback) {
+// [json] options: { example_tag_name = 1 }
+// TODO: Check if property exists in options
+// TODO: Throw error if more than 1 or less than 1 property
+InfluxDB.prototype.getMeasurementsByTagName = function (options, callback) {
+  this.queryDB(`SHOW MEASUREMENTS WHERE ${this._parseAttributes(options, '=')}`, callback)
+}
+
+// [json] options: { example_tag_name: "/\d/" }
+// TODO: Check if property exists in options
+// TODO: Throw error if more than 1 or less than 1 property
+InfluxDB.prototype.getMeasurementsByTagRegex = function (options, callback) {
+  this.queryDB(`SHOW MEASUREMENTS WHERE ${this._parseAttributes(options, '=~')}`, callback)
+}
+
+// [string] regex: "/\d/"
+// TODO: Check if regex is valid
+InfluxDB.prototype.getMeasurementsByRegex = function (regex, callback) {
+  this.queryDB(`SHOW MEASUREMENTS WITH MEASUREMENT =~ ${regex}`, callback)
+}
+
+InfluxDB.prototype.getSeries = function (measurementName, tagName, callback) {
   var query = 'show series'
 
   // if no measurement name is given
@@ -177,23 +198,11 @@ InfluxDB.prototype.getSeriesNames = function (measurementName, callback) {
     query = query + ' from "' + measurementName + '"'
   }
 
-  this.queryDB(query, function (err, results) {
-    if (err) {
-      return callback(err, results)
-    }
-    return callback(err, _.map(results[0].series, function (series) {return series.name}))
-  })
-
-}
-
-InfluxDB.prototype.getSeries = function (measurementName, callback) {
-  var query = 'show series'
-
-  // if no measurement name is given
-  if (typeof measurementName === 'function') {
-    callback = measurementName
+  // if no tag name is given
+  if (typeof tagName === 'function') {
+    callback = tagName
   } else {
-    query = query + ' from "' + measurementName + '"'
+    query += ` WHERE ${tagName}`
   }
 
   this.queryDB(query, function (err, results) {

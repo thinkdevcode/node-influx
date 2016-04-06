@@ -3,14 +3,12 @@ var url = require('url')
 var _ = require('lodash')
 
 var defaultOptions = {
-  hosts: [],
-  disabled_hosts: [],
+  host: '127.0.0.1',
   username: 'root',
   password: 'root',
   port: 8086,
   protocol: 'http',
   depreciatedLogging: (process.env.NODE_ENV === undefined || 'development') ? console.log : false,
-  failoverTimeout: 60000,
   requestTimeout: null,
   maxRetries: 2,
   timePrecision: 'ms'
@@ -20,22 +18,12 @@ var InfluxDB = function (options) {
   this.options = _.extend(_.clone(defaultOptions), options)
 
   this.request = new InfluxRequest({
-    failoverTimeout: this.options.failoverTimeout,
+    host: this.options.host,
+    port: this.options.port,
+    protocol: this.options.protocol,
     maxRetries: this.options.maxRetries,
     requestTimeout: this.options.requestTimeout
   })
-
-  if ((!_.isArray(this.options.hosts) || this.options.hosts.length === 0) && typeof this.options.host === 'string') {
-    this.request.addHost(this.options.host, this.options.port, this.options.protocol)
-  }
-  if (_.isArray(this.options.hosts) && this.options.hosts.length > 0) {
-    var self = this
-    _.each(this.options.hosts, function (host) {
-      var port = host.port || self.options.port
-      var protocol = host.protocol || self.options.protocol
-      self.request.addHost(host.host, port, protocol)
-    })
-  }
 
   return this
 }
@@ -83,10 +71,6 @@ InfluxDB.prototype._parseCallback = function (callback) {
 
 InfluxDB.prototype.setRequestTimeout = function (value) {
   return this.request.setRequestTimeout(value)
-}
-
-InfluxDB.prototype.setFailoverTimeout = function (value) {
-  return this.request.setFailoverTimeout(value)
 }
 
 // possible options:
@@ -293,12 +277,13 @@ InfluxDB.prototype._createKeyTagString = function (object) {
 }
 
 InfluxDB.prototype._prepareValues = function (measurements) {
+  var self = this
   var output = []
   _.forEach(measurements, function (values, measurementName) {
     _.each(values, function (points) {
       var line = measurementName.replace(/ /g, '\\ ').replace(/,/g, '\\,')
       if (points[1] && _.isObject(points[1]) && _.keys(points[1]).length > 0) {
-        line += ',' + this._createKeyTagString(points[1])
+        line += ',' + self._createKeyTagString(points[1])
       }
 
       if (_.isObject(points[0])) {
@@ -307,7 +292,7 @@ InfluxDB.prototype._prepareValues = function (measurements) {
           timestamp = points[0].time
           delete (points[0].time)
         }
-        line += ' ' + this._createKeyValueString(points[0])
+        line += ' ' + self._createKeyValueString(points[0])
         if (timestamp) {
           if (timestamp instanceof Date) {
             line += ' ' + timestamp.getTime()
@@ -454,14 +439,6 @@ InfluxDB.prototype.alterRetentionPolicy = function (rpName, databaseName, durati
   }
 
   this.queryDB(query, callback)
-}
-
-InfluxDB.prototype.getHostsAvailable = function () {
-  return this.request.getHostsAvailable()
-}
-
-InfluxDB.prototype.getHostsDisabled = function () {
-  return this.request.getHostsDisabled()
 }
 
 var createClient = function () {

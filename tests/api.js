@@ -91,7 +91,6 @@ describe('InfluxDB-API', function () {
         done()
       })
     })
-
   })
 
   describe('#setPassword', function () {
@@ -187,26 +186,21 @@ describe('InfluxDB-API', function () {
     this.timeout(5000)
 
     it('should write a generic point into the database', function (done) {
-      dbClient.writePoint(info.series.name, {value: 232, value2: 123}, { foo: 'bar', foobar: 'baz'}, done)
+      dbClient.writePoint(info.series.name, { value: 232, value2: 123 }, { foo: 'bar', foobar: 'baz' }, done)
     })
 
     it('should write a generic point into the database', function (done) {
-      dbClient.writePoint(info.series.name, 1, { foo: 'bar', foobar: 'baz'}, done)
+      dbClient.writePoint(info.series.name, 1, { foo: 'bar', foobar: 'baz' }, done)
     })
-
     it('should write a generic point into the database', function (done) {
-      dbClient.writePoint(info.series.name, {time: 1234567890, value: 232}, {}, done)
-
+      dbClient.writePoint(info.series.name, { time: 1234567890, value: 232 }, {}, done)
     })
-
     it('should write a point with time into the database', function (done) {
-      dbClient.writePoint(info.series.name, {time: new Date(), value: 232}, {}, done)
+      dbClient.writePoint(info.series.name, { time: new Date(), value: 232 }, {}, done)
     })
-
     it('should write a point with a string as value into the database', function (done) {
-      dbClient.writePoint(info.series.strName, {value: 'my test string'}, {}, done)
+      dbClient.writePoint(info.series.strName, { value: 'my test string' }, {}, done)
     })
-
     it('should write a point with a string as value into the database (using different method)', function (done) {
       dbClient.writePoint(info.series.strName, 'my second test string', {}, done)
     })
@@ -216,18 +210,18 @@ describe('InfluxDB-API', function () {
     this.timeout(10000)
     it('should write multiple points to the same time series, same column names', function (done) {
       var points = [
-        [{value: 232}, { foobar: 'baz'}],
-        [{value: 212}, { foobar: 'baz'}],
-        [{value: 452}, { foobar: 'baz'}],
-        [{value: 122}]
+        [{ value: 232 }, { foobar: 'baz' }],
+        [{ value: 212 }, { foobar: 'baz' }],
+        [{ value: 452 }, { foobar: 'baz' }],
+        [{ value: 122 }]
       ]
       dbClient.writePoints(info.series.name, points, done)
     })
     it('should write multiple points to the same time series, differing column names', function (done) {
       var points = [
-        [{value: 232}, { foobar: 'baz'}],
-        [{othervalue: 212}, { foobar: 'baz'}],
-        [{andanothervalue: 452}, { foobar: 'baz'}]
+        [{ value: 232 }, { foobar: 'baz' }],
+        [{ othervalue: 212 }, { foobar: 'baz' }],
+        [{ andanothervalue: 452 }, { foobar: 'baz' }]
       ]
       dbClient.writePoints(info.series.name, points, done)
     })
@@ -236,10 +230,10 @@ describe('InfluxDB-API', function () {
   describe('#writeSeries', function () {
     it('should write multiple points to multiple time series, same column names', function (done) {
       var points = [
-        [{value: 232}, { foobar: 'baz'}],
-        [{value: 212}, { foobar: 'baz'}],
-        [{value: 452}, { foobar: 'baz'}],
-        [{value: 122}]
+        [{ value: 232 }, { foobar: 'baz' }],
+        [{ value: 212 }, { foobar: 'baz' }],
+        [{ value: 452 }, { foobar: 'baz' }],
+        [{ value: 122 }]
       ]
       var data = {
         series1: points,
@@ -249,9 +243,9 @@ describe('InfluxDB-API', function () {
     })
     it('should write multiple points to multiple time series, differing column names', function (done) {
       var points = [
-        [{value: 232}, { foobar: 'baz'}],
-        [{othervalue: 212}, { foobar: 'baz'}],
-        [{andanothervalue: 452}, { foobar: 'baz'}]
+        [{ value: 232 }, { foobar: 'baz' }],
+        [{ othervalue: 212 }, { foobar: 'baz' }],
+        [{ andanothervalue: 452 }, { foobar: 'baz' }]
       ]
       var data = {
         series1: points,
@@ -395,5 +389,4 @@ describe('InfluxDB-API', function () {
       client.dropDatabase(info.db.name, done)
     })
   })
-
 })

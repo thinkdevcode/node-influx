@@ -59,7 +59,7 @@ InfluxDB.prototype.getMeasurements = function (callback) {
 // TODO: Check if property exists in options
 // TODO: Throw error if more than 1 or less than 1 property
 InfluxDB.prototype.getMeasurementsByTagName = function (options, callback) {
-  this.queryDB(`SHOW MEASUREMENTS WHERE ${this._parseAttributes(options, '=')}`, callback)
+  this.queryDB(`SHOW MEASUREMENTS WHERE ${this._createKeyTagString(options)}`, callback)
 }
 
 // [json] options: { example_tag_name: "/\d/" }
@@ -75,21 +75,21 @@ InfluxDB.prototype.getMeasurementsByRegex = function (regex, callback) {
   this.queryDB(`SHOW MEASUREMENTS WITH MEASUREMENT =~ ${regex}`, callback)
 }
 
-InfluxDB.prototype.getSeries = function (measurementName, tagName, callback) {
-  var query = 'show series'
+InfluxDB.prototype.getSeries = function (measurementName, tag, callback) {
+  var query = 'SHOW SERIES'
 
   // if no measurement name is given
   if (typeof measurementName === 'function') {
     callback = measurementName
   } else {
-    query = query + ' from "' + measurementName + '"'
+    query += ` FROM ${measurementName}`
   }
 
   // if no tag name is given
-  if (typeof tagName === 'function') {
-    callback = tagName
+  if (typeof tag === 'function') {
+    callback = tag
   } else {
-    query += ` WHERE ${tagName}`
+    query += ` WHERE ${this._createKeyTagString(tag)}`
   }
 
   this.queryDB(query, function (err, results) {

@@ -370,7 +370,6 @@ describe('InfluxDB-API', function () {
         done()
       })
     })
-    it('should bubble errors through')
   })
 
   describe('#dropSeries', function () {

@@ -46,20 +46,20 @@ describe('InfluxDB-Core', function () {
         rp: info.db.retentionPolicy,
         precision: info.server.timePrecision
       })
-      assert.equal(url, `query?u=${info.server.username}
-                              &p=${info.server.password}
-                              &db=${info.db.name}
-                              &rp=${info.db.retentionPolicy}
-                              &precision=${info.server.timePrecision}`)
+      assert.equal(url, `query?u=${info.server.username}`
+                           + `&p=${info.server.password}`
+                           + `&db=${info.db.name}`
+                           + `&rp=${info.db.retentionPolicy}`
+                           + `&precision=${info.server.timePrecision}`)
     })
 
     it('should build a properly formatted url', function () {
       var url = client.url('query')
-      assert.equal(url, `query?u=${info.server.username}
-                              &p=${info.server.password}
-                              &precision=${info.server.timePrecision}
-                              &db=${info.db.name}
-                              &rp=${info.db.retentionPolicy}`)
+      assert.equal(url, `query?u=${info.server.username}`
+                           + `&p=${info.server.password}`
+                           + `&precision=${info.server.timePrecision}`
+                           + `&db=${info.db.name}`
+                           + `&rp=${info.db.retentionPolicy}`)
     })
   })
 

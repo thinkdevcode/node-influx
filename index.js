@@ -32,8 +32,7 @@ InfluxDB.prototype.createDatabase = function (databaseName, options, callback) {
   var query = `CREATE DATABASE ${databaseName}`
   if (typeof options === 'function') {
     callback = options
-  }
-  else {
+  } else {
     query += ` WITH ${this._parseAttributes(options)}`
   }
   this.queryDB(query, callback)
@@ -48,7 +47,7 @@ InfluxDB.prototype.getDatabaseNames = function (callback) {
     if (err) {
       return callback(err, results)
     }
-    return callback(err, _.map(results[0].series[0].values, function (dbarray) {return dbarray[0]}))
+    return callback(err, _.map(results[0].series[0].values, function (dbarray) { return dbarray[0] }))
   })
 }
 
@@ -99,7 +98,6 @@ InfluxDB.prototype.getSeries = function (measurementName, tagName, callback) {
     }
     return callback(err, results[0].series)
   })
-
 }
 
 InfluxDB.prototype.dropMeasurement = function (measurementName, callback) {
@@ -312,27 +310,27 @@ InfluxDB.prototype.queryDB = function (query, options, callback) {
 // possible options:
 // {db: databaseName,  rp: retentionPolicy, precision: timePrecision}
 InfluxDB.prototype.url = function (endpoint, options, query) {
- // prepare the query object
- var queryObj = _.extend({
-   u: this.options.username,
-   p: this.options.password
- }, options || {}, query || {})
+  // prepare the query object
+  var queryObj = _.extend({
+    u: this.options.username,
+    p: this.options.password
+  }, options || {}, query || {})
 
- // add the global configuration if they are set and not provided by the options
- if (this.options.timePrecision && !queryObj.precision) {
-   queryObj.precision = this.options.timePrecision
- }
- if (this.options.database && !queryObj.db) {
-   queryObj.db = this.options.database
- }
- if (this.options.retentionPolicy && !queryObj.rp) {
-   queryObj.rp = this.options.retentionPolicy
- }
+  // add the global configuration if they are set and not provided by the options
+  if (this.options.timePrecision && !queryObj.precision) {
+    queryObj.precision = this.options.timePrecision
+  }
+  if (this.options.database && !queryObj.db) {
+    queryObj.db = this.options.database
+  }
+  if (this.options.retentionPolicy && !queryObj.rp) {
+    queryObj.rp = this.options.retentionPolicy
+  }
 
- return url.format({
-   pathname: endpoint,
-   query: queryObj
- })
+  return url.format({
+    pathname: endpoint,
+    query: queryObj
+  })
 }
 
 InfluxDB.prototype._createKeyValueString = function (object) {
@@ -396,8 +394,9 @@ InfluxDB.prototype._parseAttributes = function (options, delimiter) {
   var attributes = ''
   delimiter = delimiter || ' '
   for (var attribute in options) {
-    if (!options.hasOwnProperty(attribute))
+    if (!options.hasOwnProperty(attribute)) {
       continue
+    }
 
     attributes += `${attribute}${delimiter}${options[attribute]} `
   }
@@ -432,7 +431,7 @@ InfluxDB.prototype._parseCallback = function (callback) {
     }
 
     if (_.isObject(body) && body.results && _.isArray(body.results)) {
-      for (var i = 0;i <= body.results.length;++i) {
+      for (var i = 0; i <= body.results.length; ++i) {
         if (body.results[i] && body.results[i].error && body.results[i].error !== '') {
           return callback(new Error(body.results[i].error))
         }

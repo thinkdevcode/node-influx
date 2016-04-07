@@ -29,9 +29,28 @@ describe('InfluxDB-API', function () {
 
   describe('create client', function () {
     it('should create an instance without error', function () {
-      client = influx({host: info.server.host, port: info.server.port, username: info.server.username, password: info.server.password, database: info.db.name, retentionPolicy: info.db.retentionPolicy})
-      dbClient = influx({host: info.server.host, port: info.server.port, username: info.server.username, password: info.server.password, database: info.db.name})
-      failClient = influx({host: info.server.host, port: 6543, username: info.server.username, password: info.server.password, database: info.db.name})
+      client = influx({
+        host: info.server.host,
+        port: info.server.port,
+        username: info.server.username,
+        password: info.server.password,
+        database: info.db.name,
+        retentionPolicy: info.db.retentionPolicy
+      })
+      dbClient = influx({
+        host: info.server.host,
+        port: info.server.port,
+        username: info.server.username,
+        password: info.server.password,
+        database: info.db.name
+      })
+      failClient = influx({
+        host: info.server.host,
+        port: 6543,
+        username: info.server.username,
+        password: info.server.password,
+        database: info.db.name
+      })
 
       assert(client instanceof influx.InfluxDB)
     })
@@ -192,16 +211,20 @@ describe('InfluxDB-API', function () {
     it('should write a generic point into the database', function (done) {
       dbClient.writePoint(info.series.name, 1, { foo: 'bar', foobar: 'baz' }, done)
     })
+
     it('should write a generic point into the database', function (done) {
       dbClient.writePoint(info.series.name, { time: 1234567890, value: 232 }, {}, done)
     })
+
     it('should write a point with time into the database', function (done) {
       dbClient.writePoint(info.series.name, { time: new Date(), value: 232 }, {}, done)
     })
+
     it('should write a point with a string as value into the database', function (done) {
       dbClient.writePoint(info.series.strName, { value: 'my test string' }, {}, done)
     })
-    it('should write a point with a string as value into the database (using different method)', function (done) {
+
+    it('should write a point with a string as value into the database (using diff method)', function (done) {
       dbClient.writePoint(info.series.strName, 'my second test string', {}, done)
     })
   })
@@ -257,7 +280,7 @@ describe('InfluxDB-API', function () {
 
   describe('#query', function () {
     it('should read a point from the database', function (done) {
-      dbClient.query('SELECT value FROM ' + info.series.name + ';', function (err, res) {
+      dbClient.query(`SELECT value FROM ${info.series.name};`, function (err, res) {
         assert.equal(err, null)
         assert(res instanceof Array)
         assert.equal(res.length, 1)
@@ -270,7 +293,7 @@ describe('InfluxDB-API', function () {
 
   describe('#queryRaw', function () {
     it('should read a point from the database and return raw values', function (done) {
-      dbClient.queryRaw('SELECT value FROM ' + info.series.name + ';', function (err, res) {
+      dbClient.queryRaw(`SELECT value FROM ${info.series.name};`, function (err, res) {
         assert.equal(err, null)
         assert(res instanceof Array)
         assert.equal(res.length, 1)
@@ -282,7 +305,11 @@ describe('InfluxDB-API', function () {
 
   describe('#createContinuousQuery', function () {
     it('should create a continuous query', function (done) {
-      dbClient.createContinuousQuery('testQuery', 'SELECT COUNT(value) INTO valuesCount_1h FROM ' + info.series.name + ' GROUP BY time(1h) ', function (err, res) {
+      var query = `SELECT COUNT(value)
+                   INTO valuesCount_1h
+                   FROM ${info.series.name}
+                   GROUP BY time(1h)`
+      dbClient.createContinuousQuery('testQuery', query, function (err, res) {
         assert.equal(err, null)
         assert(res instanceof Array)
         assert.equal(res.length, 1)

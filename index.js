@@ -28,102 +28,6 @@ var InfluxDB = function (options) {
   return this
 }
 
-InfluxDB.prototype._parseResults = function (response, callback) {
-  var results = []
-  _.each(response, function (result) {
-    var tmp = []
-    if (result.series) {
-      _.each(result.series, function (series) {
-        var rows = _.map(series.values, function (values) {
-          return _.extend(_.zipObject(series.columns, values), series.tags)
-        })
-        tmp = _.chain(tmp).concat(rows).value()
-      })
-    }
-    results.push(tmp)
-  })
-  return callback(null, results)
-}
-
-InfluxDB.prototype._parseCallback = function (callback) {
-  return function (err, res, body) {
-    if (typeof callback === 'undefined') return
-    if (err) {
-      return callback(err)
-    }
-    if (res.statusCode < 200 || res.statusCode >= 300) {
-      return callback(new Error(body.error || body))
-    }
-
-    if (_.isObject(body) && body.results && _.isArray(body.results)) {
-      for (var i = 0;i <= body.results.length;++i) {
-        if (body.results[i] && body.results[i].error && body.results[i].error !== '') {
-          return callback(new Error(body.results[i].error))
-        }
-      }
-    }
-    if (body === undefined) {
-      return callback(new Error('body is undefined'))
-    }
-    return callback(null, body.results)
-  }
-}
-
-InfluxDB.prototype.setRequestTimeout = function (value) {
-  return this.request.setRequestTimeout(value)
-}
-
-// possible options:
-// {db: databaseName,  rp: retentionPolicy, precision: timePrecision}
-InfluxDB.prototype.url = function (endpoint, options, query) {
-  // prepare the query object
-  var queryObj = _.extend({
-    u: this.options.username,
-    p: this.options.password
-  }, options || {}, query || {})
-
-  // add the global configuration if they are set and not provided by the options
-  if (this.options.timePrecision && !queryObj.precision) {
-    queryObj.precision = this.options.timePrecision
-  }
-  if (this.options.database && !queryObj.db) {
-    queryObj.db = this.options.database
-  }
-  if (this.options.retentionPolicy && !queryObj.rp) {
-    queryObj.rp = this.options.retentionPolicy
-  }
-
-  return url.format({
-    pathname: endpoint,
-    query: queryObj
-  })
-}
-
-// Prepares and sends the actual request
-InfluxDB.prototype.queryDB = function (query, options, callback) {
-  if (typeof options === 'function') {
-    callback = options
-    options = undefined
-  }
-
-  this.request.get({
-    url: this.url('query', options, {q: query}),
-    json: true
-  }, this._parseCallback(callback))
-}
-
-InfluxDB.prototype._parseAttributes = function (options, delimiter) {
-  var attributes = ''
-  delimiter = delimiter || ' '
-  for (var attribute in options) {
-    if (!options.hasOwnProperty(attribute))
-      continue
-
-    attributes += `${attribute}${delimiter}${options[attribute]} `
-  }
-  return attributes
-}
-
 InfluxDB.prototype.createDatabase = function (databaseName, options, callback) {
   var query = `CREATE DATABASE ${databaseName}`
   if (typeof options === 'function') {
@@ -256,63 +160,6 @@ InfluxDB.prototype.dropUser = function (username, callback) {
   this.queryDB('drop user "' + username + '"', callback)
 }
 
-InfluxDB.prototype._createKeyValueString = function (object) {
-  return _.map(object, function (value, key) {
-    if (typeof value === 'string') {
-      return key + '="' + value + '"'
-    } else {
-      return key + '=' + value
-    }
-  }).join(',')
-}
-
-InfluxDB.prototype._createKeyTagString = function (object) {
-  return _.map(object, function (value, key) {
-    if (typeof value === 'string') {
-      return key + '=' + value.replace(/ /g, '\\ ').replace(/,/g, '\\,')
-    } else {
-      return key + '=' + value
-    }
-  }).join(',')
-}
-
-InfluxDB.prototype._prepareValues = function (measurements) {
-  var self = this
-  var output = []
-  _.forEach(measurements, function (values, measurementName) {
-    _.each(values, function (points) {
-      var line = measurementName.replace(/ /g, '\\ ').replace(/,/g, '\\,')
-      if (points[1] && _.isObject(points[1]) && _.keys(points[1]).length > 0) {
-        line += ',' + self._createKeyTagString(points[1])
-      }
-
-      if (_.isObject(points[0])) {
-        var timestamp = null
-        if (points[0].time) {
-          timestamp = points[0].time
-          delete (points[0].time)
-        }
-        line += ' ' + self._createKeyValueString(points[0])
-        if (timestamp) {
-          if (timestamp instanceof Date) {
-            line += ' ' + timestamp.getTime()
-          } else {
-            line += ' ' + timestamp
-          }
-        }
-      } else {
-        if (typeof points[0] === 'string') {
-          line += ' value="' + points[0] + '"'
-        } else {
-          line += ' value=' + points[0]
-        }
-      }
-      output.push(line)
-    }, this)
-  }, this)
-  return output.join('\n')
-}
-
 InfluxDB.prototype.writeMeasurements = function (measurements, options, callback) {
   if (typeof options === 'function') {
     callback = options
@@ -352,33 +199,6 @@ InfluxDB.prototype.writePoints = function (measurementName, points, options, cal
   var data = {}
   data[measurementName] = points
   this.writeMeasurements(data, options, callback)
-}
-
-InfluxDB.prototype.query = function (databaseName, query, callback) {
-  if (typeof query === 'function') {
-    callback = query
-    query = databaseName
-    databaseName = this.options.database
-  }
-  var self = this
-
-  this.queryDB(query, {db: databaseName}, function (err, results) {
-    if (err) {
-      return callback(err, results)
-    }
-    return self._parseResults(results, function (err, results) {
-      return callback(err, results)
-    })
-  })
-}
-
-InfluxDB.prototype.queryRaw = function (databaseName, query, callback) {
-  if (typeof query === 'function') {
-    callback = query
-    query = databaseName
-    databaseName = this.options.database
-  }
-  this.queryDB(query, {db: databaseName}, callback)
 }
 
 InfluxDB.prototype.createContinuousQuery = function (queryName, queryString, databaseName, callback) {
@@ -439,6 +259,190 @@ InfluxDB.prototype.alterRetentionPolicy = function (rpName, databaseName, durati
   }
 
   this.queryDB(query, callback)
+}
+
+InfluxDB.prototype.setRequestTimeout = function (value) {
+  return this.request.setRequestTimeout(value)
+}
+
+InfluxDB.prototype.query = function (databaseName, query, callback) {
+  if (typeof query === 'function') {
+    callback = query
+    query = databaseName
+    databaseName = this.options.database
+  }
+  var self = this
+
+  this.queryDB(query, {db: databaseName}, function (err, results) {
+    if (err) {
+      return callback(err, results)
+    }
+    return self._parseResults(results, function (err, results) {
+      return callback(err, results)
+    })
+  })
+}
+
+InfluxDB.prototype.queryRaw = function (databaseName, query, callback) {
+  if (typeof query === 'function') {
+    callback = query
+    query = databaseName
+    databaseName = this.options.database
+  }
+  this.queryDB(query, {db: databaseName}, callback)
+}
+
+// Prepares and sends the actual request
+InfluxDB.prototype.queryDB = function (query, options, callback) {
+  if (typeof options === 'function') {
+    callback = options
+    options = undefined
+  }
+
+  this.request.get({
+    url: this.url('query', options, {q: query}),
+    json: true
+  }, this._parseCallback(callback))
+}
+
+/*
+ *  Core helper functions
+ */
+
+// possible options:
+// {db: databaseName,  rp: retentionPolicy, precision: timePrecision}
+InfluxDB.prototype.url = function (endpoint, options, query) {
+ // prepare the query object
+ var queryObj = _.extend({
+   u: this.options.username,
+   p: this.options.password
+ }, options || {}, query || {})
+
+ // add the global configuration if they are set and not provided by the options
+ if (this.options.timePrecision && !queryObj.precision) {
+   queryObj.precision = this.options.timePrecision
+ }
+ if (this.options.database && !queryObj.db) {
+   queryObj.db = this.options.database
+ }
+ if (this.options.retentionPolicy && !queryObj.rp) {
+   queryObj.rp = this.options.retentionPolicy
+ }
+
+ return url.format({
+   pathname: endpoint,
+   query: queryObj
+ })
+}
+
+InfluxDB.prototype._createKeyValueString = function (object) {
+  return _.map(object, function (value, key) {
+    if (typeof value === 'string') {
+      return key + '="' + value + '"'
+    } else {
+      return key + '=' + value
+    }
+  }).join(',')
+}
+
+InfluxDB.prototype._createKeyTagString = function (object) {
+  return _.map(object, function (value, key) {
+    if (typeof value === 'string') {
+      return key + '=' + value.replace(/ /g, '\\ ').replace(/,/g, '\\,')
+    } else {
+      return key + '=' + value
+    }
+  }).join(',')
+}
+
+InfluxDB.prototype._prepareValues = function (measurements) {
+  var self = this
+  var output = []
+  _.forEach(measurements, function (values, measurementName) {
+    _.each(values, function (points) {
+      var line = measurementName.replace(/ /g, '\\ ').replace(/,/g, '\\,')
+      if (points[1] && _.isObject(points[1]) && _.keys(points[1]).length > 0) {
+        line += ',' + self._createKeyTagString(points[1])
+      }
+
+      if (_.isObject(points[0])) {
+        var timestamp = null
+        if (points[0].time) {
+          timestamp = points[0].time
+          delete (points[0].time)
+        }
+        line += ' ' + self._createKeyValueString(points[0])
+        if (timestamp) {
+          if (timestamp instanceof Date) {
+            line += ' ' + timestamp.getTime()
+          } else {
+            line += ' ' + timestamp
+          }
+        }
+      } else {
+        if (typeof points[0] === 'string') {
+          line += ' value="' + points[0] + '"'
+        } else {
+          line += ' value=' + points[0]
+        }
+      }
+      output.push(line)
+    }, this)
+  }, this)
+  return output.join('\n')
+}
+
+InfluxDB.prototype._parseAttributes = function (options, delimiter) {
+  var attributes = ''
+  delimiter = delimiter || ' '
+  for (var attribute in options) {
+    if (!options.hasOwnProperty(attribute))
+      continue
+
+    attributes += `${attribute}${delimiter}${options[attribute]} `
+  }
+  return attributes
+}
+
+InfluxDB.prototype._parseResults = function (response, callback) {
+  var results = []
+  _.each(response, function (result) {
+    var tmp = []
+    if (result.series) {
+      _.each(result.series, function (series) {
+        var rows = _.map(series.values, function (values) {
+          return _.extend(_.zipObject(series.columns, values), series.tags)
+        })
+        tmp = _.chain(tmp).concat(rows).value()
+      })
+    }
+    results.push(tmp)
+  })
+  return callback(null, results)
+}
+
+InfluxDB.prototype._parseCallback = function (callback) {
+  return function (err, res, body) {
+    if (typeof callback === 'undefined') return
+    if (err) {
+      return callback(err)
+    }
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      return callback(new Error(body.error || body))
+    }
+
+    if (_.isObject(body) && body.results && _.isArray(body.results)) {
+      for (var i = 0;i <= body.results.length;++i) {
+        if (body.results[i] && body.results[i].error && body.results[i].error !== '') {
+          return callback(new Error(body.results[i].error))
+        }
+      }
+    }
+    if (body === undefined) {
+      return callback(new Error('body is undefined'))
+    }
+    return callback(null, body.results)
+  }
 }
 
 var createClient = function () {

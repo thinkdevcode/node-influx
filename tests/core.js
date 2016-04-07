@@ -4,7 +4,6 @@ var assert = require('assert')
 
 describe('InfluxDB-Core', function () {
   var client
-  var failClient
 
   var info = {
     server: {
@@ -43,7 +42,6 @@ describe('InfluxDB-Core', function () {
       var url = client.url('query')
       assert.equal(url, /* 'http://'+info.server.host+':8086/' + */ 'query?u=' + info.server.username + '&p=' + info.server.password + '&precision=' + info.server.timePrecision + '&db=' + info.db.name + '&rp=' + info.db.retentionPolicy)
     })
-
   })
 
   describe('#_createKeyTagString', function () {
@@ -77,5 +75,4 @@ describe('InfluxDB-Core', function () {
         })
     })
   })
-
 })

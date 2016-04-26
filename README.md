@@ -73,17 +73,6 @@ documentation to support multiple instance writes and queries._
 
 ## Functions
 
-
-##### setRequestTimeout
-Sets the default timeout for a request. When a request times out the host is removed from the list of available hosts
-and the request is resubmitted to the next configured host. The default value is ```null``` (will wait forever for a respose).
-
-Be careful with this setting. If the value is too low, slow queries might disable all configured hosts.
-
-```js
-client.setRequestTimeout( value )
-```
-
 ##### createDatabase
 Creates a new database - requires cluster admin privileges.
 
@@ -99,14 +88,14 @@ client.createDatabase(databaseName, [options,] function(err, result) {} )
 | NAME | retention-policy-name |
 
 ##### getDatabaseNames
-Returns array of database names - requires cluster admin privileges
+Returns array of database names - requires cluster admin privileges.
 
 ```js
 client.getDatabaseNames( function(err,arrayDatabaseNames){ } )
 ```
 
 ##### dropDatabase
-Drops a database inluding all measurements/series - requires cluster admin privileges
+Drops a database including all measurements/series - requires cluster admin privileges.
 
 ```js
 dropDatabase ( databaseName, function(err,response) { })
@@ -114,10 +103,19 @@ dropDatabase ( databaseName, function(err,response) { })
 
 
 ##### getMeasurements
-Returns array of measurements - requires database admin privileges
+Returns array of measurements - requires database admin privileges.
 
 ```js
 client.getMeasurements(function(err,arrayMeasurements){ } )
+```
+
+##### getMeasurementsByTagName
+Returns array of measurements by tag name - requires database admin privileges.
+
+```js
+client.getMeasurements(options, function(err,arrayMeasurements){ } )
+
+options = { tag_name: "tag_value" }
 ```
 
 

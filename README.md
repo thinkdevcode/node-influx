@@ -49,9 +49,9 @@ var client = influx({
 A list of all configuration values can be found below.
 
 
-_NOTE: node-influx version <= 4.x used a pooling system to round robin requests and this no longer
-exists. Please refer to the official InfluxDB Relay documentation to support multiple
-instance writes and queries._
+_NOTE: node-influx version <= 4.x used an optional pooling system to round robin requests
+and this no longer exists in the library. Please refer to the official InfluxDB Relay
+documentation to support multiple instance writes and queries._
 
 
 ### Configuration options
@@ -64,7 +64,6 @@ instance writes and queries._
 | host | hostname, e.g. 'localhost' |
 | port [optional] |  influxdb port, default: 8086 |
 | protocol [optional] |  protocol, default: http |
-| hosts [optional] | Array of hosts for cluster configuration, e.g. [ {host: 'localhost', port : 8086},...] Port is optional |
 | depreciatedLogging [optional] | logging function for depreciated warnings, defaults to console.log |
 | failoverTimeout [optional] |  number of ms node-influx will take a host out of the balancing after a request failed, default: 60000 |
 | requestTimeout [optional] | number of ms to wait before a request times out. defaults to 'null' (waits until connection is closed). Use with caution! |
@@ -85,35 +84,19 @@ Be careful with this setting. If the value is too low, slow queries might disabl
 client.setRequestTimeout( value )
 ```
 
-##### setFailoverTimeout
-Sets the failover timeout for a host. After a host has been removed from balancing, it will be re-enabled after 60
-seconds (default). You can configure the timeout value using this function.
-
-```js
-client.setFailoverTimeout( value )
-```
-
-##### getHostsAvailable
-Returns an array of available hosts.
-
-```js
-getHostsAvailable( )
-```
-
-##### getHostsDisabled
-Returns an array of disabled hosts. This can be useful to check whether a host is unresponsive or not.
-```js
-client.getHostsDisabled( )
-```
-
-
 ##### createDatabase
-Creates a new database - requires cluster admin privileges
+Creates a new database - requires cluster admin privileges.
 
 ```js
-client.createDatabase(databaseName, function(err, result) {} )
+client.createDatabase(databaseName, [options,] function(err, result) {} )
 ```
 
+| Option      | Description   |
+|:----------- |:--------------|
+| DURATION    | <duration>    |
+| REPLICATION | <n>           |
+| SHARD DURATION | <duration> |
+| NAME | <retention-policy-name> |
 
 ##### getDatabaseNames
 Returns array of database names - requires cluster admin privileges

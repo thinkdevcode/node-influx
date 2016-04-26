@@ -21,6 +21,8 @@ Interested in becoming a maintainer? Please help out with issues and pull-reques
 
 ## Compatibility
 
+Master is compatible with InfluxDB 0.12.1 (most features work with 0.10, 0.11)
+
 Version 4.x.x is compatible with InfluxDB 0.9.x
 
 Version 3.x.x is compatible with InfluxDB 0.8.x - 3.x will no longer have updates by core contributers, please consider upgrading.
@@ -34,16 +36,6 @@ Create a client instance (`database` not required for all methods):
 var influx = require('influx')
 
 var client = influx({
-
-  //cluster configuration
-  hosts : [
-    {
-      host : 'localhost',
-      port : 8060, //optional. default 8086
-      protocol : 'http' //optional. default 'http'
-    }
-  ],
-  // or single-host configuration
   host : 'localhost',
   port : 8086, // optional, default 8086
   protocol : 'http', // optional, default 'http'
@@ -57,9 +49,9 @@ var client = influx({
 A list of all configuration values can be found below.
 
 
-You can either pass a single hostname or an array of hostnames. Node-influx uses round-robin balancing to distribute
-the requests across all configured hosts. When a host is unreachable, node-influx tries to resubmit the request to another
-host and disables the failed host for 60 seconds (timeout value is configurable). If all servers fail to respond, node-influx raises an error.
+_NOTE: node-influx version <= 4.x used a pooling system to round robin requests and this no longer
+exists. Please refer to the official InfluxDB Relay documentation to support multiple
+instance writes and queries._
 
 
 ### Configuration options

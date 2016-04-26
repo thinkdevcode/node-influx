@@ -93,10 +93,10 @@ client.createDatabase(databaseName, [options,] function(err, result) {} )
 
 | Option      | Description   |
 |:----------- |:--------------|
-| DURATION    | <duration>    |
-| REPLICATION | <n>           |
-| SHARD DURATION | <duration> |
-| NAME | <retention-policy-name> |
+| DURATION    | duration    |
+| REPLICATION | n           |
+| SHARD DURATION | duration |
+| NAME | retention-policy-name |
 
 ##### getDatabaseNames
 Returns array of database names - requires cluster admin privileges

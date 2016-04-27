@@ -73,7 +73,7 @@ documentation to support multiple instance writes and queries._
 
 ## Functions
 
-##### createDatabase
+##### (#createDatabase)
 
 Creates a new database.
 _Requires cluster admin privileges._
@@ -89,7 +89,7 @@ client.createDatabase(databaseName, [options,] (err, result) => {})
 | SHARD DURATION | duration |
 | NAME | retention-policy-name |
 
-##### getDatabaseNames
+##### (#getDatabaseNames)
 
 Returns array of database names.
 _Requires cluster admin privileges._

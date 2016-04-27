@@ -70,10 +70,13 @@ documentation to support multiple instance writes and queries._
 | maxRetries [options] | max number of retries until a request raises an error (e.g. 'no hosts available'), default : 2 |
 | timePrecision [optional] |Time precision, default : ms |
 
+## Table of Contents
+- [createDatabase](#createDatabase)
+- [getDatabaseNames](#getDatabaseNames)
 
 ## Functions
 
-(#####createDatabase)
+##### createDatabase
 
 Creates a new database.
 _Requires cluster admin privileges._
@@ -89,7 +92,7 @@ client.createDatabase(databaseName, [options,] (err, result) => {})
 | SHARD DURATION | duration |
 | NAME | retention-policy-name |
 
-##### (#getDatabaseNames)
+##### getDatabaseNames
 
 Returns array of database names.
 _Requires cluster admin privileges._

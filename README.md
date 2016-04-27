@@ -74,10 +74,12 @@ documentation to support multiple instance writes and queries._
 ## Functions
 
 ##### createDatabase
-Creates a new database - requires cluster admin privileges.
+
+Creates a new database.
+_Requires cluster admin privileges._
 
 ```js
-client.createDatabase(databaseName, [options,] function(err, result) {} )
+client.createDatabase(databaseName, [options,] (err, result) => {})
 ```
 
 | Option      | Description   |
@@ -88,14 +90,18 @@ client.createDatabase(databaseName, [options,] function(err, result) {} )
 | NAME | retention-policy-name |
 
 ##### getDatabaseNames
-Returns array of database names - requires cluster admin privileges.
+
+Returns array of database names.
+_Requires cluster admin privileges._
 
 ```js
 client.getDatabaseNames((err, arrayDatabaseNames) => { })
 ```
 
 ##### dropDatabase
-Drops a database including all measurements/series - requires cluster admin privileges.
+
+Drops a database including all measurements/series.
+_Requires cluster admin privileges._
 
 ```js
 dropDatabase(databaseName, (err, response) => { })
@@ -103,14 +109,18 @@ dropDatabase(databaseName, (err, response) => { })
 
 
 ##### getMeasurements
-Returns array of measurements - requires database admin privileges.
+
+Returns array of measurements.
+_Requires database admin privileges._
 
 ```js
 client.getMeasurements((err, arrayMeasurements) => { })
 ```
 
 ##### getMeasurementsByTagName
-Returns array of measurements by tag name - requires database admin privileges.
+
+Returns array of measurements by tag name.
+_Requires database admin privileges._
 
 ```js
 client.getMeasurements(options, (err, arrayMeasurements) => { })
@@ -119,7 +129,9 @@ options = { tag_name: "tag_value" }
 ```
 
 ##### getMeasurementsByTagRegex
-Returns array of measurements by tag regex - requires database admin privileges.
+
+Returns array of measurements by tag regex.
+_Requires database admin privileges._
 
 ```js
 client.getMeasurements(options, (err, arrayMeasurements) => { })
@@ -128,7 +140,9 @@ options = { tag_name: "/\d/" }
 ```
 
 ##### getMeasurementsRegex
-Returns array of measurements by regex - requires database admin privileges.
+
+Returns array of measurements by regex.
+_Requires database admin privileges._
 
 ```js
 client.getMeasurements(regex, (err, arrayMeasurements) => { })
@@ -137,10 +151,12 @@ regex = '/\d/'
 ```
 
 ##### dropMeasurement
-Drops a measurement from a database - requires database admin privileges.
+
+Drops a measurement from a database.
+_Requires database admin privileges._
 
 ```js
-dropSeries(measurementName, (err,response) => { })
+dropSeries(measurementName, (err, response) => { })
 ```
 
 

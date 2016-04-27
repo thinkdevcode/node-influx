@@ -105,20 +105,19 @@ InfluxDB.prototype.dropMeasurement = function (measurementName, callback) {
 }
 
 InfluxDB.prototype.dropSeries = function (seriesId, callback) {
-  this.queryDB('drop series ' + seriesId, callback)
+  this.queryDB(`DROP SERIES ${seriesId}`, callback)
 }
 
 InfluxDB.prototype.getUsers = function (callback) {
   var self = this
 
-  this.queryDB('show users', function (err, results) {
+  this.queryDB('SHOW USERS', function (err, results) {
     if (err) {
       return callback(err, results)
     }
     return self._parseResults(results, function (err, results) {
       return callback(err, results[0])
     })
-  // return callback(err, results[0].series[0].values)
   })
 }
 
@@ -135,15 +134,15 @@ InfluxDB.prototype.createUser = function (username, password, isAdmin, callback)
 }
 
 InfluxDB.prototype.setPassword = function (username, password, callback) {
-  this.queryDB('set password for "' + username + '" = \'' + password + "'", callback)
+  this.queryDB(`SET PASSWORD FOR "${username}" = '${password}'`, callback)
 }
 
-InfluxDB.prototype.grantPrivilege = function (privilege, databaseName, userName, callback) {
-  this.queryDB('grant ' + privilege + ' on "' + databaseName + '" to "' + userName + '"', callback)
+InfluxDB.prototype.grantPrivilege = function (privilege, databaseName, username, callback) {
+  this.queryDB(`GRANT ${privilege} ON "${databaseName}" TO "${username}"`, callback)
 }
 
-InfluxDB.prototype.revokePrivilege = function (privilege, databaseName, userName, callback) {
-  this.queryDB('revoke ' + privilege + ' on "' + databaseName + '" from "' + userName + '"', callback)
+InfluxDB.prototype.revokePrivilege = function (privilege, databaseName, username, callback) {
+  this.queryDB(`REVOKE ${privilege} ON "${databaseName}" FROM "${username}"`, callback)
 }
 
 InfluxDB.prototype.grantAdminPrivileges = function (userName, callback) {

@@ -64,10 +64,14 @@ documentation to support multiple instance writes and queries._
 | host | hostname, e.g. 'localhost' |
 | port [optional] |  influxdb port, default: 8086 |
 | protocol [optional] |  protocol, default: http |
-| depreciatedLogging [optional] | logging function for depreciated warnings, defaults to console.log |
-| failoverTimeout [optional] |  number of ms node-influx will take a host out of the balancing after a request failed, default: 60000 |
-| requestTimeout [optional] | number of ms to wait before a request times out. defaults to 'null' (waits until connection is closed). Use with caution! |
-| maxRetries [options] | max number of retries until a request raises an error (e.g. 'no hosts available'), default : 2 |
+| depreciatedLogging [optional] | logging function for depreciated warnings,
+defaults to console.log |
+| failoverTimeout [optional] |  number of ms node-influx will take a host out
+of the balancing after a request failed, default: 60000 |
+| requestTimeout [optional] | number of ms to wait before a request times out.
+Defaults to 'null' (waits until connection is closed). Use with caution! |
+| maxRetries [options] | max number of retries until a request raises an error
+(e.g. 'no hosts available'), default : 2 |
 | timePrecision [optional] |Time precision, default : ms |
 
 ## Table of Contents
@@ -79,11 +83,18 @@ documentation to support multiple instance writes and queries._
 - [getMeasurementsByTagRegex](#getMeasurementsByTagRegex)
 - [getMeasurementsByRegex](#getMeasurementsByRegex)
 - [dropMeasurement](#dropMeasurement)
+- [getSeries](#getSeries)
+- [dropSeries](#dropSeries)
+- [getUsers](#getUsers)
+- [createUser](#createUser)
+- [setPassword](#setPassword)
+- [grantPrivilege](#grantPrivilege)
+- [revokePrivilege](#revokePrivilege)
 
 ## Functions
 
-##### createDatabase
 
+##### createDatabase
 Creates a new database.
 _Requires cluster admin privileges._
 
@@ -98,8 +109,8 @@ client.createDatabase(databaseName, [options,] (err, result) => {})
 | SHARD DURATION | duration |
 | NAME | retention-policy-name |
 
-##### getDatabaseNames
 
+##### getDatabaseNames
 Returns array of database names.
 _Requires cluster admin privileges._
 
@@ -107,8 +118,8 @@ _Requires cluster admin privileges._
 client.getDatabaseNames((err, arrayDatabaseNames) => { })
 ```
 
-##### dropDatabase
 
+##### dropDatabase
 Drops a database including all measurements/series.
 _Requires cluster admin privileges._
 
@@ -118,7 +129,6 @@ dropDatabase(databaseName, (err, response) => { })
 
 
 ##### getMeasurements
-
 Returns array of measurements.
 _Requires database admin privileges._
 
@@ -126,41 +136,38 @@ _Requires database admin privileges._
 client.getMeasurements((err, arrayMeasurements) => { })
 ```
 
-##### getMeasurementsByTagName
 
+##### getMeasurementsByTagName
 Returns array of measurements by tag name.
 _Requires database admin privileges._
 
 ```js
 client.getMeasurements(options, (err, arrayMeasurements) => { })
-
 options = { tag_name: "tag_value" }
 ```
 
-##### getMeasurementsByTagRegex
 
+##### getMeasurementsByTagRegex
 Returns array of measurements by tag regex.
 _Requires database admin privileges._
 
 ```js
 client.getMeasurements(options, (err, arrayMeasurements) => { })
-
 options = { tag_name: "/\d/" }
 ```
 
-##### getMeasurementsByRegex
 
+##### getMeasurementsByRegex
 Returns array of measurements by regex.
 _Requires database admin privileges._
 
 ```js
 client.getMeasurementsByRegex(regex, (err, arrayMeasurements) => { })
-
 regex = '/\d/'
 ```
 
-##### dropMeasurement
 
+##### dropMeasurement
 Drops a measurement from a database.
 _Requires database admin privileges._
 
@@ -170,66 +177,69 @@ dropSeries(measurementName, (err, response) => { })
 
 
 ##### getSeries
-Returns array of series names from given measurement, or database if `measurementName` is omitted - requires database admin privileges.
+Returns array of series names from given measurement, or database if
+`measurementName` is omitted.
+_Requires database admin privileges._
 
 ```js
-client.getSeries([measurementName,] [tags,] (err, arraySeriesNames) => {})
-
-tags = { tag_name_a: 'tag_value_a', tag_name_b: 'tag_value_b'}
-```
-
-##### getSeriesNames
-Returns array of series names from given measurement - requires database admin privileges
-
-```js
-client.getSeriesNames([measurementName,] function(err,arraySeriesNames){} ) { }
+client.getSeries([measurementName,] [tag,] (err, arraySeriesNames) => {})
+tag = { tag_name: 'tag_value'}
 ```
 
 
 ##### dropSeries
-Drops a series from a database - requires database admin privileges
+Drops a series from a database.
+_Requires database admin privileges._
 
 ```js
-dropSeries ( seriesId, function(err,response) { })
+dropSeries(seriesId, (err, response) => { })
 ```
-
 
 
 ##### getUsers
-Returns an array of users - requires cluster admin privileges
+Returns an array of users.
+_Requires cluster admin privileges._
 
 ```js
-client.getUsers(function (err, users) { } )
+client.getUsers((err, users) => { })
 ```
+
 
 ##### createUser
-Creates a new database user - requires cluster admin privileges
+Creates a new database user.
+_Requires cluster admin privileges._
 
 ```js
-client.createUser(username, password, isAdmin, function(err,response) { })
+client.createUser(username, password, isAdmin, (err, response) => { })
 ```
 
+
 ##### setPassword
-Sets the users password - requires admin privileges
+Sets the users password.
+_Requires admin privileges._
 
 ```js
-client.setPassword(username, password, function (err, reponse) {} )
+client.setPassword(username, password, (err, response) => {} )
 ```
 
 
 ##### grantPrivilege
-Grants privilege for the given user - requires admin privileges
+Grants privilege for the given user.
+_Requires admin privileges._
 
 ```js
-client.grantPrivilege(privilege, databaseName, userName, function (err, reponse) {} )
+client.grantPrivilege(privilege, databaseName, username, (err, response) => {})
 ```
+
 
 ##### revokePrivilege
-Revokes privilege for the given user - requires admin privileges
+Revokes privilege for the given user.
+_Requires admin privileges._
 
 ```js
-client.revokePrivilege(privilege, databaseName, userName, function (err, reponse) {} )
+client.revokePrivilege(privilege, databaseName, username, (err, response) => {})
 ```
+
 
 ##### grantAdminPrivileges
 Grants admin privileges for the given user - requires admin privileges

@@ -73,7 +73,7 @@ documentation to support multiple instance writes and queries._
 
 ## Functions
 
-##### (#createDatabase)
+(#####createDatabase)
 
 Creates a new database.
 _Requires cluster admin privileges._

@@ -91,14 +91,14 @@ client.createDatabase(databaseName, [options,] function(err, result) {} )
 Returns array of database names - requires cluster admin privileges.
 
 ```js
-client.getDatabaseNames( function(err,arrayDatabaseNames){ } )
+client.getDatabaseNames((err, arrayDatabaseNames) => { })
 ```
 
 ##### dropDatabase
 Drops a database including all measurements/series - requires cluster admin privileges.
 
 ```js
-dropDatabase ( databaseName, function(err,response) { })
+dropDatabase(databaseName, (err, response) => { })
 ```
 
 
@@ -106,32 +106,51 @@ dropDatabase ( databaseName, function(err,response) { })
 Returns array of measurements - requires database admin privileges.
 
 ```js
-client.getMeasurements(function(err,arrayMeasurements){ } )
+client.getMeasurements((err, arrayMeasurements) => { })
 ```
 
 ##### getMeasurementsByTagName
 Returns array of measurements by tag name - requires database admin privileges.
 
 ```js
-client.getMeasurements(options, function(err,arrayMeasurements){ } )
+client.getMeasurements(options, (err, arrayMeasurements) => { })
 
 options = { tag_name: "tag_value" }
 ```
 
-
-##### dropMeasurement
-Drops a measurement from a database - requires database admin privileges
+##### getMeasurementsByTagRegex
+Returns array of measurements by tag regex - requires database admin privileges.
 
 ```js
-dropSeries ( measurementName, function(err,response) { })
+client.getMeasurements(options, (err, arrayMeasurements) => { })
+
+options = { tag_name: "/\d/" }
+```
+
+##### getMeasurementsRegex
+Returns array of measurements by regex - requires database admin privileges.
+
+```js
+client.getMeasurements(regex, (err, arrayMeasurements) => { })
+
+regex = '/\d/'
+```
+
+##### dropMeasurement
+Drops a measurement from a database - requires database admin privileges.
+
+```js
+dropSeries(measurementName, (err,response) => { })
 ```
 
 
 ##### getSeries
-Returns array of series names from given measurement, or database if `measurementName` is omitted - requires database admin privileges
+Returns array of series names from given measurement, or database if `measurementName` is omitted - requires database admin privileges.
 
 ```js
-client.getSeries([measurementName,] function(err,arraySeriesNames){} )
+client.getSeries([measurementName,] [tags,] (err, arraySeriesNames) => {})
+
+tags = { tag_name_a: 'tag_value_a', tag_name_b: 'tag_value_b'}
 ```
 
 ##### getSeriesNames

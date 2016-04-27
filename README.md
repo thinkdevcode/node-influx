@@ -73,6 +73,12 @@ documentation to support multiple instance writes and queries._
 ## Table of Contents
 - [createDatabase](#createDatabase)
 - [getDatabaseNames](#getDatabaseNames)
+- [dropDatabase](#dropDatabase)
+- [getMeasurements](#getMeasurements)
+- [getMeasurementsByTagName](#getMeasurementsByTagName)
+- [getMeasurementsByTagRegex](#getMeasurementsByTagRegex)
+- [getMeasurementsByRegex](#getMeasurementsByRegex)
+- [dropMeasurement](#dropMeasurement)
 
 ## Functions
 
@@ -142,13 +148,13 @@ client.getMeasurements(options, (err, arrayMeasurements) => { })
 options = { tag_name: "/\d/" }
 ```
 
-##### getMeasurementsRegex
+##### getMeasurementsByRegex
 
 Returns array of measurements by regex.
 _Requires database admin privileges._
 
 ```js
-client.getMeasurements(regex, (err, arrayMeasurements) => { })
+client.getMeasurementsByRegex(regex, (err, arrayMeasurements) => { })
 
 regex = '/\d/'
 ```

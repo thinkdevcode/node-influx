@@ -145,16 +145,16 @@ InfluxDB.prototype.revokePrivilege = function (privilege, databaseName, username
   this.queryDB(`REVOKE ${privilege} ON "${databaseName}" FROM "${username}"`, callback)
 }
 
-InfluxDB.prototype.grantAdminPrivileges = function (userName, callback) {
-  this.queryDB('grant all privileges to "' + userName + '"', callback)
+InfluxDB.prototype.grantAdminPrivileges = function (username, callback) {
+  this.queryDB(`GRANT ALL PRIVILEGES TO "${username}"`, callback)
 }
 
-InfluxDB.prototype.revokeAdminPrivileges = function (userName, callback) {
-  this.queryDB('revoke all privileges from "' + userName + '"', callback)
+InfluxDB.prototype.revokeAdminPrivileges = function (username, callback) {
+  this.queryDB(`REVOKE ALL PRIVILEGES FROM "${username}"`, callback)
 }
 
 InfluxDB.prototype.dropUser = function (username, callback) {
-  this.queryDB('drop user "' + username + '"', callback)
+  this.queryDB(`DROP USER "${username}"`, callback)
 }
 
 InfluxDB.prototype.writeMeasurements = function (measurements, options, callback) {
@@ -178,13 +178,13 @@ InfluxDB.prototype.writeMeasurements = function (measurements, options, callback
   }, this._parseCallback(callback))
 }
 
-InfluxDB.prototype.writePoint = function (measurementName, values, tags, options, callback) {
+InfluxDB.prototype.writePoint = function (measurementName, fields, tags, options, callback) {
   if (typeof options === 'function') {
     callback = options
     options = {}
   }
   var data = {}
-  data[measurementName] = [[values, tags]]
+  data[measurementName] = [[fields, tags]]
   this.writeMeasurements(data, options, callback)
 }
 

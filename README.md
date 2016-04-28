@@ -90,6 +90,11 @@ Defaults to 'null' (waits until connection is closed). Use with caution! |
 - [setPassword](#setPassword)
 - [grantPrivilege](#grantPrivilege)
 - [revokePrivilege](#revokePrivilege)
+- [grantAdminPrivileges](#grantAdminPrivileges)
+- [revokeAdminPrivileges](#revokeAdminPrivileges)
+- [dropUser](#dropUser)
+- [writePoint](#writePoint)
+- [writePoints](#writePoints)
 
 ## Functions
 
@@ -115,7 +120,7 @@ Returns array of database names.
 _Requires cluster admin privileges._
 
 ```js
-client.getDatabaseNames((err, arrayDatabaseNames) => { })
+client.getDatabaseNames((err, arrayDatabaseNames) => {})
 ```
 
 
@@ -124,7 +129,7 @@ Drops a database including all measurements/series.
 _Requires cluster admin privileges._
 
 ```js
-dropDatabase(databaseName, (err, response) => { })
+dropDatabase(databaseName, (err, response) => {})
 ```
 
 
@@ -133,7 +138,7 @@ Returns array of measurements.
 _Requires database admin privileges._
 
 ```js
-client.getMeasurements((err, arrayMeasurements) => { })
+client.getMeasurements((err, arrayMeasurements) => {})
 ```
 
 
@@ -142,7 +147,7 @@ Returns array of measurements by tag name.
 _Requires database admin privileges._
 
 ```js
-client.getMeasurements(options, (err, arrayMeasurements) => { })
+client.getMeasurements(options, (err, arrayMeasurements) => {})
 options = { tag_name: "tag_value" }
 ```
 
@@ -152,7 +157,7 @@ Returns array of measurements by tag regex.
 _Requires database admin privileges._
 
 ```js
-client.getMeasurements(options, (err, arrayMeasurements) => { })
+client.getMeasurements(options, (err, arrayMeasurements) => {})
 options = { tag_name: "/\d/" }
 ```
 
@@ -162,7 +167,7 @@ Returns array of measurements by regex.
 _Requires database admin privileges._
 
 ```js
-client.getMeasurementsByRegex(regex, (err, arrayMeasurements) => { })
+client.getMeasurementsByRegex(regex, (err, arrayMeasurements) => {})
 regex = '/\d/'
 ```
 
@@ -172,7 +177,7 @@ Drops a measurement from a database.
 _Requires database admin privileges._
 
 ```js
-dropSeries(measurementName, (err, response) => { })
+dropSeries(measurementName, (err, response) => {})
 ```
 
 
@@ -192,7 +197,7 @@ Drops a series from a database.
 _Requires database admin privileges._
 
 ```js
-dropSeries(seriesId, (err, response) => { })
+dropSeries(seriesId, (err, response) => {})
 ```
 
 
@@ -201,7 +206,7 @@ Returns an array of users.
 _Requires cluster admin privileges._
 
 ```js
-client.getUsers((err, users) => { })
+client.getUsers((err, users) => {})
 ```
 
 
@@ -210,7 +215,7 @@ Creates a new database user.
 _Requires cluster admin privileges._
 
 ```js
-client.createUser(username, password, isAdmin, (err, response) => { })
+client.createUser(username, password, isAdmin, (err, response) => {})
 ```
 
 
@@ -219,7 +224,7 @@ Sets the users password.
 _Requires admin privileges._
 
 ```js
-client.setPassword(username, password, (err, response) => {} )
+client.setPassword(username, password, (err, response) => {})
 ```
 
 
@@ -242,107 +247,84 @@ client.revokePrivilege(privilege, databaseName, username, (err, response) => {})
 
 
 ##### grantAdminPrivileges
-Grants admin privileges for the given user - requires admin privileges
+Grants admin privileges for the given user.
+_Requires admin privileges._
 
 ```js
-client.grantAdminPrivileges(userName, function (err, reponse) {} )
+client.grantAdminPrivileges(username, (err, response) => {})
 ```
+
 
 ##### revokeAdminPrivileges
-Revokes all admin privileges for the given user - requires admin privileges
+Revokes all admin privileges for the given user.
+_Requires admin privileges._
 
 ```js
-client.revokeAdminPrivileges(userName, function (err, reponse) {} )
+client.revokeAdminPrivileges(username, (err, response) => {})
 ```
 
+
 ##### dropUser
-Drops the given user - requires admin privileges
+Drops the given user.
+_Requires admin privileges._
 ```js
-client.dropUser(userName, function(err,response) {] )
+client.dropUser(username, (err, response) => {})
 ```
 
 
 ##### writePoint
-Writes a point to a series - requires database user privileges
+Writes a point to a measurement. A point can contain one or more fields, and
+none or more tags.
+_Requires database user privileges._
 
 ```js
-var point = { attr : value, time : new Date()};
-client.writePoint(seriesName, values, tags, [options,] function(err, response) { })
+var point = { attr: value, time: new Date() }
+client.writePoint(measurementName, fields, tags, [options,] (err, response) => {})
 ```
 
-`values` can be either an objekt or a single value. For the latter the columname is set to `value`.
-You can set the time by passing an object propety called `time`. The time an be either an integer value or a Date object. When providing a single value, don't forget to adjust the time precision accordingly. The default value is `ms`.
-The parameter `options` is optional and can be used to set the time precision.
+`fields` can either be an object or a single value. For the latter, the field
+name is set to `value`.
+You can set the time by passing an object property called `time`. The time can
+be either an integer value or a Date object. When providing a single value,
+don't forget to adjust the time precision accordingly. The default value is
+`ms`. The parameter `options` is optional and can be used to set the time
+precision.
 
-###### example
+###### writePoint Example
 ```js
-//write a single point with two values and two tags. time is omitted
-client.writePoint(info.series.name, {value: 232, value2: 123}, { foo: 'bar', foobar: 'baz'}, done)
+// write a single point with two fields and two tags. Time is omitted.
+client.writePoint('testMeasurement', { fieldA: 232, fieldB: 123 }, { tagA: 'foo', tagB: 'bar' }, (err, response) => {})
 
-//write a single point with the value "1". The value "1" corresponds to { value : 1 }
-client.writePoint(info.series.name, 1, { foo: 'bar', foobar: 'baz'}, done)
+// write a single point with the value "1". The value "1" corresponds to { value: 1 }
+client.writePoint('testMeasurement', 1, { tagA: 'foo', tagB: 'bar'}, (err, response) => {})
 
-//write a single point, providing an integer timestamp and time precision 's' for seconds
-client.writePoint(info.series.name, {time: 1234567890, value: 232}, null, {precision : 's'}, done)
+// write a single point, providing an integer timestamp and time precision 's' for seconds
+client.writePoint('testMeasurement', { time: 1234567890, value: 232 }, null, { precision: 's' }, (err, response) => {})
 
-//write a single point, providing a Date object. Precision is set to default 'ms' for milliseconds.
-client.writePoint(info.series.name, {time: new Date(), value: 232}, null,  done)
-
-
+// write a single point, providing a Date object. Precision is set to default 'ms' for milliseconds.
+client.writePoint('testMeasurement', { time: new Date(), value: 232 }, null, (err, response) => {})
 ```
+
 
 ###### writePoints
-Writes multiple points to a series - requires database user privileges
+Writes multiple points to a series.
+_Requires database user privileges._
 
-`Points` is an array of points. Each point containing two objects - the actual values and tags.
+`Points` is an array of points. Each point containing two objects: the actual fields and tags.
 ```js
 var points = [
   //first value with tag
-  [{value: 232}, { tag: 'foobar'}],
+  [{ fieldA: 232 }, { tagA: 'foo' }],
   //second value with different tag
-  [{value: 212}, { someothertag: 'baz'}],
+  [{ fieldA: 212 }, { tagB: 'bar' }],
   //third value, passed as integer. Different tag
-  [123, { foobar: 'baz'}],
+  [123, { tagA: 'foo' }],
   //value providing timestamp, without tags
-  [{value: 122, time : new Date()}]
+  [{ value: 122, time: new Date() }]
 ]
-client.writePoints(seriesName, points, [options,] callback) { }
+client.writePoints(measurementName, points, [options,] (err, response) => {})
 ```
 
-##### writeSeries
-Writes multiple point to multiple series - requires database user privileges
-
-```js
-var points = [
-  //first value with tag
-  [{value: 232}, { tag: 'foobar'}],
-  //second value with different tag
-  [{value: 212}, { someothertag: 'baz'}],
-  //third value, passed as integer. Different tag
-  [123, { foobar: 'baz'}],
-  //value providing timestamp, without tags
-  [{value: 122, time : new Date()}]
-]
-
-var points2 = [
-  //first value with tag
-  [{value: 1232}, { tag: 'foobar'}],
-  //second value with different tag
-  [{value: 223212}, { someothertag: 'baz'}],
-  //third value, passed as integer. Different tag
-  [12345, { foobar: 'baz'}],
-  //value providing timestamp, without tags
-  [{value: 23122, time : new Date()}]
-]
-var series = {
-    series_name_one : points,
-    series_name_two : points2
-};
-
-client.writeSeries(series, [options,] function(err,response) { })
-```
-
-*Please note that there's a POST limit at about 2MB per request. Do not submit too many points at once.*
 
 ##### query
 Queries the database and returns an array of parsed responses. - requires database user privileges.

@@ -204,9 +204,7 @@ InfluxDB.prototype.createContinuousQuery = function (queryName, queryString, dat
     databaseName = this.options.database
   }
 
-  var query = 'CREATE CONTINUOUS QUERY ' + queryName + ' ON "' + databaseName + '" BEGIN ' +
-    queryString +
-    ' END'
+  var query = `CREATE CONTINUOUS QUERY ${queryName} ON "${databaseName}" BEGIN ${queryString} END`
   this.queryDB(query, callback)
 }
 
@@ -223,36 +221,32 @@ InfluxDB.prototype.dropContinuousQuery = function (queryName, databaseName, call
     callback = databaseName
     databaseName = this.options.database
   }
-  this.queryDB('DROP CONTINUOUS QUERY "' + queryName + '" ON "' + databaseName + '"', callback)
+  this.queryDB(`DROP CONTINUOUS QUERY "${queryName}" ON "${databaseName}"`, callback)
 }
 
 InfluxDB.prototype.createRetentionPolicy = function (rpName, databaseName, duration, replication, isDefault, callback) {
-  var query = 'create retention policy "' + rpName +
-    '" on "' + databaseName +
-    '" duration ' + duration +
-    ' replication ' + replication
+  var query = `CREATE RETENTION POLICY "${rpName}" ON "${databaseName}" DURATION ${duration} REPLICATION ${replication}`
   if (isDefault) {
-    query += ' default'
+    query += ' DEFAULT'
   }
 
   this.queryDB(query, callback)
 }
 
 InfluxDB.prototype.getRetentionPolicies = function (databaseName, callback) {
-  this.queryDB('show retention policies on "' + databaseName + '"', callback)
+  this.queryDB(`SHOW RETENTION POLICIES ON "${databaseName}"`, callback)
 }
 
 InfluxDB.prototype.alterRetentionPolicy = function (rpName, databaseName, duration, replication, isDefault, callback) {
-  var query = 'alter retention policy "' + rpName +
-    '" on "' + databaseName + '"'
+  var query = `ALTER RETENTION POLICY "${rpName}" ON "${databaseName}"`
   if (duration) {
-    query += ' duration ' + duration
+    query += ` DURATION ${duration}`
   }
   if (replication) {
-    query += ' replication ' + replication
+    query += ` REPLICATION ${replication}`
   }
   if (isDefault) {
-    query += ' default'
+    query += ' DEFAULT'
   }
 
   this.queryDB(query, callback)

@@ -102,7 +102,6 @@ Defaults to 'null' (waits until connection is closed). Use with caution! |
 ##### createDatabase
 Creates a new database.
 _Requires cluster admin privileges._
-
 ```js
 client.createDatabase(databaseName, [options,] (err, result) => {})
 ```
@@ -118,7 +117,6 @@ client.createDatabase(databaseName, [options,] (err, result) => {})
 ##### getDatabaseNames
 Returns array of database names.
 _Requires cluster admin privileges._
-
 ```js
 client.getDatabaseNames((err, arrayDatabaseNames) => {})
 ```
@@ -127,7 +125,6 @@ client.getDatabaseNames((err, arrayDatabaseNames) => {})
 ##### dropDatabase
 Drops a database including all measurements/series.
 _Requires cluster admin privileges._
-
 ```js
 dropDatabase(databaseName, (err, response) => {})
 ```
@@ -136,7 +133,6 @@ dropDatabase(databaseName, (err, response) => {})
 ##### getMeasurements
 Returns array of measurements.
 _Requires database admin privileges._
-
 ```js
 client.getMeasurements((err, arrayMeasurements) => {})
 ```
@@ -145,7 +141,6 @@ client.getMeasurements((err, arrayMeasurements) => {})
 ##### getMeasurementsByTagName
 Returns array of measurements by tag name.
 _Requires database admin privileges._
-
 ```js
 client.getMeasurements(options, (err, arrayMeasurements) => {})
 options = { tag_name: "tag_value" }
@@ -155,7 +150,6 @@ options = { tag_name: "tag_value" }
 ##### getMeasurementsByTagRegex
 Returns array of measurements by tag regex.
 _Requires database admin privileges._
-
 ```js
 client.getMeasurements(options, (err, arrayMeasurements) => {})
 options = { tag_name: "/\d/" }
@@ -165,7 +159,6 @@ options = { tag_name: "/\d/" }
 ##### getMeasurementsByRegex
 Returns array of measurements by regex.
 _Requires database admin privileges._
-
 ```js
 client.getMeasurementsByRegex(regex, (err, arrayMeasurements) => {})
 regex = '/\d/'
@@ -175,7 +168,6 @@ regex = '/\d/'
 ##### dropMeasurement
 Drops a measurement from a database.
 _Requires database admin privileges._
-
 ```js
 dropSeries(measurementName, (err, response) => {})
 ```
@@ -185,7 +177,6 @@ dropSeries(measurementName, (err, response) => {})
 Returns array of series names from given measurement, or database if
 `measurementName` is omitted.
 _Requires database admin privileges._
-
 ```js
 client.getSeries([measurementName,] [tag,] (err, arraySeriesNames) => {})
 tag = { tag_name: 'tag_value'}
@@ -195,7 +186,6 @@ tag = { tag_name: 'tag_value'}
 ##### dropSeries
 Drops a series from a database.
 _Requires database admin privileges._
-
 ```js
 dropSeries(seriesId, (err, response) => {})
 ```
@@ -204,7 +194,6 @@ dropSeries(seriesId, (err, response) => {})
 ##### getUsers
 Returns an array of users.
 _Requires cluster admin privileges._
-
 ```js
 client.getUsers((err, users) => {})
 ```
@@ -213,7 +202,6 @@ client.getUsers((err, users) => {})
 ##### createUser
 Creates a new database user.
 _Requires cluster admin privileges._
-
 ```js
 client.createUser(username, password, isAdmin, (err, response) => {})
 ```
@@ -222,7 +210,6 @@ client.createUser(username, password, isAdmin, (err, response) => {})
 ##### setPassword
 Sets the users password.
 _Requires admin privileges._
-
 ```js
 client.setPassword(username, password, (err, response) => {})
 ```
@@ -231,7 +218,6 @@ client.setPassword(username, password, (err, response) => {})
 ##### grantPrivilege
 Grants privilege for the given user.
 _Requires admin privileges._
-
 ```js
 client.grantPrivilege(privilege, databaseName, username, (err, response) => {})
 ```
@@ -240,7 +226,6 @@ client.grantPrivilege(privilege, databaseName, username, (err, response) => {})
 ##### revokePrivilege
 Revokes privilege for the given user.
 _Requires admin privileges._
-
 ```js
 client.revokePrivilege(privilege, databaseName, username, (err, response) => {})
 ```
@@ -249,7 +234,6 @@ client.revokePrivilege(privilege, databaseName, username, (err, response) => {})
 ##### grantAdminPrivileges
 Grants admin privileges for the given user.
 _Requires admin privileges._
-
 ```js
 client.grantAdminPrivileges(username, (err, response) => {})
 ```
@@ -258,7 +242,6 @@ client.grantAdminPrivileges(username, (err, response) => {})
 ##### revokeAdminPrivileges
 Revokes all admin privileges for the given user.
 _Requires admin privileges._
-
 ```js
 client.revokeAdminPrivileges(username, (err, response) => {})
 ```
@@ -276,7 +259,6 @@ client.dropUser(username, (err, response) => {})
 Writes a point to a measurement. A point can contain one or more fields, and
 none or more tags.
 _Requires database user privileges._
-
 ```js
 var point = { attr: value, time: new Date() }
 client.writePoint(measurementName, fields, tags, [options,] (err, response) => {})
@@ -327,12 +309,12 @@ client.writePoints(measurementName, points, [options,] (err, response) => {})
 
 
 ##### query
-Queries the database and returns an array of parsed responses. - requires database user privileges.
+Queries the database and returns an array of parsed responses.
+_Requires database user privileges._
 
 ```js
-var query = 'SELECT MEDIAN(column) FROM myseries WHERE time > now() - 24h';
-client.query([database,] query, function(err, results) { })
-
+var query = 'SELECT MEDIAN(fieldA) FROM testMeasurement WHERE time > now() - 1d'
+client.query([database,] query, (err, results) => {})
 ```
 
 If `database` is omitted, node-influx uses the database defined in the default options.
@@ -342,94 +324,83 @@ To make things easier the query function now returns a parsed response, meaning 
 You can also pass multiple queries at once. The callback returns an array of series, one series per query.
 
 ```js
-client.query('SELECT * FROM myseries; SELECT AVG(VALUE) as avgvalue from myseries', function (err, results) {});
-
+client.query('SELECT * FROM testMeasurement; SELECT AVG(fieldA) AS avgvalue FROM testMeasurement', (err, results) => {})
 // -> results =[
-//   [ { value : 1, tagname : 'tagvalue'}, {value : 3, othertag : 'value}],
-//   [ {avgvalue : 2.345}]
+//   [{ fieldA: 1, tagA: 'foo'}, { fieldA: 3, tagA: 'foo' }],
+//   [{ avgvalue: 2.345 }]
 // ]
-
 ```
 
 
 ##### queryRaw
 Same as function `query` but returns the raw response from InfluxDB.
-
+_Requires database user privileges._
 ```js
-var query = 'SELECT MEDIAN(column) FROM myseries WHERE time > now() - 24h';
-client.queryRaw([database,] query, function(err, results) { })
-
+var query = 'SELECT MEDIAN(fieldA) FROM testMeasurement WHERE time > now() - 1d'
+client.queryRaw([database,] query, (err, results) => {})
 ```
+
 
 ##### createContinuousQuery
-
-Creates a continuous query - requires admin privileges
-
+Creates a continuous query.
+_Requires admin privileges._
 ```js
-client.createContinuousQuery('testQuery', 'SELECT COUNT(value) INTO valuesCount_1h FROM ' + info.series.name + ' GROUP BY time(1h) ', function (err, res) {} )
+client.createContinuousQuery('testQuery', 'SELECT COUNT(fieldA) INTO fieldA_1h FROM testMeasurement GROUP BY time(1h)', (err, res) => {})
 ```
+
 
 ##### getContinuousQueries
-Fetches all continuous queries from a database - requires database admin privileges
-
+Fetches all continuous queries from a database.
+_Requires database admin privileges._
 ```js
-getContinuousQueries( function(err,arrayContinuousQueries) { })
+getContinuousQueries((err, arrayContinuousQueries) => {})
 ```
 
-##### dropContinuousQuery
-Drops a continuous query from a database - requires database admin privileges
 
+##### dropContinuousQuery
+Drops a continuous query from a database.
+_Requires database admin privileges._
 ```js
-dropContinuousQuery( queryName, [databaseName,] callback) { }
+dropContinuousQuery(queryName, [databaseName,] (err, response) => {})
 ```
 
 
 ##### getRetentionPolicies
-
 Fetches all retention policies from a database.
-
 ```js
-client.getRetentionPolicies(databaseName, function(err,response) {} )
+client.getRetentionPolicies(databaseName, (err, response) => {})
 ```
 
+
 ##### createRetentionPolicy
-
-Creates a new retention policy - requires admin privileges.
-
+Creates a new retention policy.
+_Requires admin privileges._
 ```js
-client.createRetentionPolicy(rpName, databaseName, duration, replication, isDefault, function(err,response) {} )
+client.createRetentionPolicy(rpName, databaseName, duration, replication, isDefault, (err, response) => {})
 ```
 
 ##### example
 ```js
-client.createRetentionPolicy('my_ret_pol_name', 'my_database', '1d', 1, true, function (err,resonse) {})
+client.createRetentionPolicy('my_ret_pol_name', 'my_database', '1d', 1, true, (err, response) => {})
 ```
+
 
 ##### alterRetentionPolicy
-
 Alters an existing retention policy - requires admin privileges.
-
 ```js
-client.alterRetentionPolicy(rpName, databaseName, duration, replication, isDefault, function(err,response) {} )
+client.alterRetentionPolicy(rpName, databaseName, duration, replication, isDefault, (err, response) => {})
 ```
 
 
-
-
-
-
-As Jeff Atwood puts it... [Read the source, Luke](http://www.codinghorror.com/blog/2012/04/learn-to-read-the-source-luke.html). If you're still stuck, read the `./examples/*` files and the `./test.js` file.
-
 ## Testing
-
 Either install InfluxDB or use a docker container to run the service:
 
     docker run -d -p 8083:8083 -p 8086:8086 --expose 8090 --expose 8099 tutum/influxdb
 
 Then to run the test harness use `npm test`.
 
-## Contributing
 
+## Contributing
 If you want to add features, fix bugs or improve node-influx please open a pull-request.
 Please note, we are following [Javascript Standard Style](https://github.com/feross/standard). Before opening a PR
 your code should pass Standard.
@@ -438,7 +409,5 @@ your code should pass Standard.
  `standard`
 
 
-
 ## Licence
-
-MIT
+*MIT*
